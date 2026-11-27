@@ -4,7 +4,6 @@ import "react-multi-carousel/lib/styles.css";
 import Countdown from 'react-countdown';
 import { Link } from 'react-router-dom';
 
-
 const responsive = {
     desktop: {
         breakpoint: { max: 3000, min: 1024 },
@@ -61,7 +60,6 @@ const useStyle = makeStyles(theme => ({
     wrapper: {
         padding: '25px 15px'
     },
-    
 }));
 
 const MultiSlide = ({ data, timer, title }) => {
@@ -71,60 +69,77 @@ const MultiSlide = ({ data, timer, title }) => {
     const renderer = ({ hours, minutes, seconds }) => {
         return <span className={classes.timer}>{hours} : {minutes} : {seconds}  Left</span>;
     };
-    
+
     return (
         <Box className={classes.component}>
             <Box className={classes.deal}>
                 <Typography className={classes.dealText}>{title}</Typography>
                 {
-                    timer && <Box className={classes.timer}>
-                                <img src={timerURL} style={{ width: 24 }} alt='time clock' />
-                                <Countdown date={Date.now() + 5.04e+7} renderer={renderer} />
+                    timer && (
+                        <Box className={classes.timer}>
+                            <img src={timerURL} style={{ width: 24 }} alt='time clock' />
+                            <Countdown date={Date.now() + 5.04e+7} renderer={renderer} />
                         </Box>
+                    )
                 }
                 <Button variant="contained" color="primary" className={classes.button}>View All</Button>
             </Box>
             <Divider />
-            <Carousel
-                swipeable={false}
-                draggable={false}
-                responsive={responsive}
-                centerMode={true}
-                infinite={true}
-                autoPlay={true}
-                autoPlaySpeed={10000}
-                keyBoardControl={true}
-                showDots={false}
-                containerClass="carousel-container"
-                // removeArrowOnDeviceType={["tablet", "mobile"]}
-                dotListClass="custom-dot-list-style"
-                itemClass="carousel-item-padding-40-px"
-            >
-                {
-                    data.map(temp => (
-                        <Link to={`product/${temp.id}`} style={{textDecoration: 'none'}}>
-                            <Box textAlign="center" className={classes.wrapper}>
-                                <img src={temp.url} className={classes.image} alt="" />
-                                <Typography className={classes.text} style={{ fontWeight: 600, color: '#212121' }}>{temp.title.shortTitle}</Typography>
-                                <Typography className={classes.text} style={{ color: 'green' }}>{temp.discount}</Typography>
-                                <Typography className={classes.text} style={{ color: '#212121', opacity: '.6' }}>{temp.tagline}</Typography>
-                            </Box>
-                        </Link>
-                    ))
-                }
-            </Carousel>
+            {
+                Array.isArray(data) && data.length > 0 ? (
+                    <Carousel
+                        swipeable={false}
+                        draggable={false}
+                        responsive={responsive}
+                        centerMode={true}
+                        infinite={true}
+                        autoPlay={true}
+                        autoPlaySpeed={10000}
+                        keyBoardControl={true}
+                        showDots={false}
+                        containerClass="carousel-container"
+                        dotListClass="custom-dot-list-style"
+                        itemClass="carousel-item-padding-40-px"
+                    >
+                        {
+                            data.map(temp => (
+                                <Link key={temp.id} to={`/product/${temp.id}`} style={{ textDecoration: 'none' }}>
+                                    <Box textAlign="center" className={classes.wrapper}>
+                                        <img src={temp.url} className={classes.image} alt={temp.title?.shortTitle || ''} />
+                                        <Typography className={classes.text} style={{ fontWeight: 600, color: '#212121' }}>
+                                            {temp.title?.shortTitle}
+                                        </Typography>
+                                        <Typography className={classes.text} style={{ color: 'green' }}>
+                                            {temp.discount}
+                                        </Typography>
+                                        <Typography className={classes.text} style={{ color: '#212121', opacity: '.6' }}>
+                                            {temp.tagline}
+                                        </Typography>
+                                    </Box>
+                                </Link>
+                            ))
+                        }
+                    </Carousel>
+                ) : (
+                    <Box textAlign="center" className={classes.wrapper}>
+                        <Typography className={classes.text} style={{ color: '#7f7f7f' }}>
+                            No products available right now
+                        </Typography>
+                    </Box>
+                )
+            }
         </Box>
-    )
-}
+    );
+};
 
 const Slide = (props) => {
     return (
         <>
             {
-                props.multi === true ? <MultiSlide {...props} /> : ''      
+                props.multi === true ? <MultiSlide {...props} /> : ''
             }
         </>
-    )
-}
+    );
+};
 
 export default Slide;
